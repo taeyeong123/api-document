@@ -7,6 +7,115 @@ import {
   oneDark,
   okaidia,
 } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Tag from '../../components/Tag';
+import { ApiType, MethodType, PathType } from '../../types/Types';
+
+export default function ApiDocument() {
+  const [api, setApi] = useState<ApiType>();
+  const [markdown, setMarkdown] = useState<string>('');
+  const didMount = useRef(false);
+
+  useEffect(() => {
+    if (didMount.current) {
+      setMarkdown(String.raw`${markdownString}`);
+      Object.entries(api!.paths).forEach(([pathString, value]) => {
+        Object.entries(value as PathType).forEach(([method, value]) => {
+          Object.entries(value.responses).forEach(([response, value]) => {
+            console.log(pathString);
+            console.log(method);
+            console.log(response);
+            console.log('\n');
+          });
+        });
+      });
+    } else {
+      fetch('https://test-api.sell-up.co.kr/doc/v3/api-docs', {
+        method: 'get',
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setApi(data);
+        });
+      didMount.current = true;
+    }
+  }, [api]);
+
+  return api ? (
+    <ApiDocumentWrapper>
+      <Title>{api.info.title}</Title>
+      {api.servers.map((server) => (
+        <Server>
+          {server.url} - {server.description}
+        </Server>
+      ))}
+      {api.tags.map((tag) => {
+        return (
+          <Tag
+            tag={tag}
+            paths={Object.entries(api.paths).filter(([pathString, value]) => {
+              const pathType = value as PathType;
+              return pathType[getMethod(pathType)].tags.includes(tag.name);
+            })}
+          ></Tag>
+        );
+      })}
+    </ApiDocumentWrapper>
+  ) : (
+    <></>
+  );
+
+  // return (
+  //   <div className="App">
+  //     <Content>
+  //       <ReactMarkdown
+  //         remarkPlugins={[remarkGfm]}
+  //         components={{
+  //           code({ children }) {
+  //             return (
+  //               <SyntaxHighlighter style={okaidia} language="java" PreTag="div">
+  //                 {String(children)}
+  //               </SyntaxHighlighter>
+  //             );
+  //           },
+  //         }}
+  //       >
+  //         {markdown}
+  //       </ReactMarkdown>
+  //     </Content>
+  //   </div>
+  // );
+}
+
+function getMethod(pathType: PathType): MethodType {
+  if (pathType.post) {
+    return 'post';
+  } else if (pathType.get) {
+    return 'get';
+  } else if (pathType.update) {
+    return 'update';
+  } else if (pathType.put) {
+    return 'put';
+  } else {
+    return 'delete';
+  }
+}
+
+const ApiDocumentWrapper = styled.div`
+  width: 1024px;
+  margin: 0 auto;
+  border: 1px solid black;
+`;
+
+const Title = styled.h1`
+  font-size: 1em;
+  text-align: center;
+  color: red;
+  border: 1px solid black;
+`;
+
+const Server = styled.div`
+  border: 1px solid black;
+`;
 
 var markdownString = `
   # 제목
@@ -29,92 +138,3 @@ var markdownString = `
   }
   \`\`\`
 `;
-
-const Content = styled.div`
-  width: 1024px;
-  margin: 0 auto;
-`;
-
-const Title = styled.h1`
-  font-size: 1em;
-  text-align: center;
-  color: red;
-`;
-
-type Server = {
-  description: String;
-  url: String;
-};
-
-type Tag = {
-  name: String;
-  description: String;
-};
-
-type Api = {
-  components: {
-    schemas: {};
-  };
-  info: {
-    title: String;
-    version: String;
-  };
-  openapi: String;
-  paths: {};
-  servers: Server[];
-  tags: Tag[];
-};
-
-function ApiDocument() {
-  const [api, setApi] = useState<Api>();
-  const [markdown, setMarkdown] = useState<string>('');
-  const didMount = useRef(false);
-
-  useEffect(() => {
-    if (didMount.current) {
-      console.log();
-
-      setMarkdown(String.raw`${markdownString}`);
-    } else {
-      fetch(
-        'http://sell-up-test-server.ap-northeast-2.elasticbeanstalk.com/doc/v3/api-docs?group=courier_order',
-        {
-          method: 'get',
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setApi(data);
-        });
-      didMount.current = true;
-    }
-  }, [api]);
-
-  useEffect(() => {
-    console.log(markdown);
-    console.log(markdownString);
-  }, [markdown]);
-
-  return (
-    <div className="App">
-      <Content>
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            code({ children }) {
-              return (
-                <SyntaxHighlighter style={okaidia} language="java" PreTag="div">
-                  {String(children)}
-                </SyntaxHighlighter>
-              );
-            },
-          }}
-        >
-          {markdown}
-        </ReactMarkdown>
-      </Content>
-    </div>
-  );
-}
-
-export default ApiDocument;
