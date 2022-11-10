@@ -42,7 +42,10 @@ export default function ApiDocument() {
 
   return api ? (
     <ApiDocumentWrapper>
-      <Title>{api.info.title}</Title>
+      <TitleWrapper>
+        <Title>{api.info.title}</Title>
+        <Version>{api.info.version}</Version>
+      </TitleWrapper>
       {api.servers.map((server) => (
         <Server>
           {server.url} - {server.description}
@@ -106,10 +109,18 @@ const ApiDocumentWrapper = styled.div`
   border: 1px solid black;
 `;
 
-const Title = styled.h1`
-  font-size: 1em;
+const TitleWrapper = styled.div`
+  display: flex;
+  border: 1px solid black;
+`;
+
+const Title = styled.div`
+  font-size: 50px;
   text-align: center;
-  color: red;
+  border: 1px solid black;
+`;
+
+const Version = styled.div`
   border: 1px solid black;
 `;
 
