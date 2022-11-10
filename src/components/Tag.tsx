@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import { TagType } from '../types/Types';
 import Path from './Path';
@@ -8,17 +9,23 @@ interface TagProps {
 }
 
 export default function Tag({ tag, paths }: TagProps) {
+  const [titleWrapper, setTitleWrapper] = useState(false);
+
+  const onClickHandler = () => {
+    setTitleWrapper(!titleWrapper);
+  };
+
   return (
     <TagWrapper>
-      <TitleWrapper>
+      <TitleWrapper onClick={onClickHandler}>
         <TagName>{tag.name}</TagName>
         <TagDescription>{tag.description}</TagDescription>
       </TitleWrapper>
-      {paths.map((path) => {
-        return <Path path={path[1]} pathString={path[0]}></Path>;
-      })}
+      {titleWrapper &&
+        paths.map((path) => {
+          return <Path path={path[1]} pathString={path[0]}></Path>;
+        })}
 
-      <br />
       <br />
       <br />
     </TagWrapper>
