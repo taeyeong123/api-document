@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { MethodType, PathType } from '../types/Types';
-import Parameter from './Parameter';
-import Parameters from './Parameters';
-import Responses from './Responses';
+import Parameter from './parameter/Parameter';
+import Parameters from './parameter/Parameters';
+import Responses from './response/Responses';
 
 interface PathProps {
   pathString: string;
