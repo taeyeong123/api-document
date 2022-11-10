@@ -50,7 +50,7 @@ export type ResponseContentType = {
 };
 
 export type SchemaType = {
-  type: 'string' | 'integer';
+  type: 'string' | 'integer' | 'array';
   format?: string;
 };
 

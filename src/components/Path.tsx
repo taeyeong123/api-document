@@ -19,8 +19,8 @@ export default function Path({ pathString, path }: PathProps) {
   return (
     <PathWrapper>
       <PathTitleBox onClick={pathTitleBoxOnclickHandler}>
-        <Method>{getMethod(path)} - </Method>
-        <PathString>{pathString} - </PathString>
+        <Method>{getMethod(path)}</Method>
+        <PathString>{pathString}</PathString>
         <Description>{path[getMethod(path)].summary}</Description>
       </PathTitleBox>
       {pathTitleBoxStatus && path[getMethod(path)].parameters ? (
