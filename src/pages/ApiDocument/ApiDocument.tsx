@@ -1,11 +1,14 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import remarkGfm from 'remark-gfm';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/default-highlight';
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import {
+  oneDark,
+  okaidia,
+} from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-const markdown = `
+var markdownString = `
   # 제목
 
   **굵게**
@@ -16,6 +19,13 @@ const markdown = `
   \`\`\`json
   {
     "key": "value"
+  }
+  \`\`\`
+
+  ---
+  \`\`\`java
+  public static void main() {
+
   }
   \`\`\`
 `;
@@ -57,11 +67,14 @@ type Api = {
 
 function ApiDocument() {
   const [api, setApi] = useState<Api>();
+  const [markdown, setMarkdown] = useState<string>('');
   const didMount = useRef(false);
 
   useEffect(() => {
     if (didMount.current) {
-      console.log(api?.openapi);
+      console.log();
+
+      setMarkdown(String.raw`${markdownString}`);
     } else {
       fetch(
         'http://sell-up-test-server.ap-northeast-2.elasticbeanstalk.com/doc/v3/api-docs?group=courier_order',
@@ -77,6 +90,11 @@ function ApiDocument() {
     }
   }, [api]);
 
+  useEffect(() => {
+    console.log(markdown);
+    console.log(markdownString);
+  }, [markdown]);
+
   return (
     <div className="App">
       <Content>
@@ -85,11 +103,7 @@ function ApiDocument() {
           components={{
             code({ children }) {
               return (
-                <SyntaxHighlighter
-                  style={atomOneDark}
-                  language="json"
-                  PreTag="div"
-                >
+                <SyntaxHighlighter style={okaidia} language="java" PreTag="div">
                   {String(children)}
                 </SyntaxHighlighter>
               );
