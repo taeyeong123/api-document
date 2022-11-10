@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { ResponseContentType } from '../../types/Types';
 
 interface ResponseContentProps {
   mediaType: string;
