@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import { MethodType, PathType } from '../types/Types';
 import Parameter from './parameter/Parameter';
@@ -10,19 +11,26 @@ interface PathProps {
 }
 
 export default function Path({ pathString, path }: PathProps) {
+  const [pathTitleBoxStatus, setPathTitleBoxStatus] = useState(false);
+  const pathTitleBoxOnclickHandler = () => {
+    setPathTitleBoxStatus(!pathTitleBoxStatus);
+  };
+
   return (
     <PathWrapper>
-      <PathTitleBox>
+      <PathTitleBox onClick={pathTitleBoxOnclickHandler}>
         <Method>{getMethod(path)} - </Method>
         <PathString>{pathString} - </PathString>
         <Description>{path[getMethod(path)].summary}</Description>
       </PathTitleBox>
-      {path[getMethod(path)].parameters ? (
+      {pathTitleBoxStatus && path[getMethod(path)].parameters ? (
         <Parameters parameters={path[getMethod(path)].parameters}></Parameters>
       ) : (
         <></>
       )}
-      <Responses responses={path[getMethod(path)].responses}></Responses>
+      {pathTitleBoxStatus && (
+        <Responses responses={path[getMethod(path)].responses}></Responses>
+      )}
       <br />
     </PathWrapper>
   );
